@@ -1,0 +1,19 @@
+version: '3.8'
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.100.2.0/24
+services:
+  web:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command: ["uvicorn", "tds.calculator.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - /tmp:/data
+    env_file:
+      .env
+    ports:
+      - 8000:8000
