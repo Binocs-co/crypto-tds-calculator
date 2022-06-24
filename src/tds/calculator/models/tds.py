@@ -10,7 +10,7 @@ class UserTDSDetails(BaseModel):
         tds | [TDSDetails]
     '''
     user: User = Field(None)
-    tds_details: List[TDSDetails] = Field(None)
+    tds_details: TDSDetails = Field(None)
 
 class TDSDetails(BaseModel):
     '''
@@ -19,7 +19,6 @@ class TDSDetails(BaseModel):
            fiat: float,  currency: string, challan: url,
            status: string}}
     '''
-    trade_id: str = Field(None)
     amount: Amount = Field(None)
     fiat: float = Field(None)
     currency: str = Field(None)

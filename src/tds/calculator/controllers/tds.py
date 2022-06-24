@@ -34,7 +34,11 @@ router = APIRouter(prefix="/tds", tags=["tds"], route_class=ExceptionHandlerLogg
         binocs-id | string
 '''
 @router.post(path="/tds-register-user", response_model=BinocsId)
-async def registerUser(user: User):
+async def registerUser(exchange_user_id: str,
+                       pan: str,
+                       ITR_ack: bool,
+                       exempt: bool):
+    user = User(exchange_user_id, pan, ITR_ack, exempt)
     registered_id: BinocsId = await tds_service.registerUser(user)
     return registered_id
 
@@ -50,10 +54,19 @@ async def registerUser(user: User):
         tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
         binocs-account-details | account details in the exchange [TBD]
 '''
-@router.get(path="/tds-value", response_model=List[UserTDSDetail])
-async def tradeTDS(userTradeDetail: UserTradeDetail):
+@router.get(path="/tds-value", response_model=userTradeDetail)
+async def tradeTDS(trade_id: str,
+                   timestamp: int,
+                   trade_type: str,
+                   maker_user_id: str,
+                   maker_amount: str,
+                   taker_user_id: str,
+                   taker_amount: str):
+    userTradeDetail = UserTradeDetail(trade_id, timestamp, trade_type,
+                                      maker_user_id, maker_amount,
+                                      taker_user_id, taker_amount)
     userTDSDetail: UserTDSDetail = await tds_service.tdsValue(userTradeDetail)
-    return userTDSDetail
+    return userTradeDetail
 
 '''
     Get /tds-status/
@@ -65,6 +78,7 @@ async def tradeTDS(userTradeDetail: UserTradeDetail):
 
 '''
 @router.get(path="/tds-status", response_model=List[UserTDSDetail], response_model_exclude_unset=True)
-async def status(user: User, trade_id: str = None, page: int = 1, limit: int = 10):
+async def status(exchange_user_id: str, trade_id: str = None, page: int = 1, limit: int = 10):
+    user = get_user(exchange_user_id)
     userTDSDetail: UserTDSDetail = await tds_service.getTDSStatus(user, trade_id, page, limit)
     return userTDSDetail

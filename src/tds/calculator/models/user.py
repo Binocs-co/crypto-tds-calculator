@@ -7,6 +7,7 @@ class User(BinocsModel):
     exchange_user_id: str = Field(None)
     pan: str = Field(None)
     itr_ack: bool = Field(True)
+    exempt: bool = Field(False)
 
     class Config:
         arbitrary_types_allowed = True

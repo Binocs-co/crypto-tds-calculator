@@ -18,7 +18,11 @@ class UserTradeDetail(BaseModel):
     timestamp: int = Field(None)
     trade_type: str = Field(None)
     maker: User = Field(None)
-    maker_amount: list = Field(None)
+    maker_amount: Amount = Field(None)
     taker: User = Field(None)
-    taker_amount: list = Field(None)
-    tds_details: list = Field(None)
+    taker_amount: Amount = Field(None)
+    tds_details: List[UserTDSDetails] = Field(None)
+
+    def add_tds(self, user_tds_details):
+        self.tds_details.append(user_tds_details)
+        return

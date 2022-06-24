@@ -9,6 +9,7 @@ from tds.calculator.models.user import User
 from tds.calculator.models.trade import UserTradeDetail, TradeDetail, Amount
 from tds.calculator.models.tds import UserTdsDetail, TdsDetail
 
+TDS_VALUE_PERCENT = 1
 logger = get_logger(__name__)
 
 class TDSService:
@@ -31,34 +32,45 @@ class TDSService:
 
     #Returns TDS
     def compute_tds(self, trade):
-        for amt in trade.maker_amount:
+        taker_tds = None
+        maker_tds = None
 
-        return {}
+        #If user is getting paid in fiat, is a seller of the VDA with its consideration in Fiat.
+        # => the user need not hold anything for TDS
+        maker_consideration_fiat = trade.taker_amount.is_fiat()
+        if maker_consideration_fiat == False:
+            percent_amt = trade.maker_amount.percent_amt(TDS_VALUE_PERCENT)
+            tds_details = TDSDetails(percent_amt)
+            taker_tds = UserTDSDetail(trade.taker, tds_details)
+
+        taker_consideration_fiat = trade.maker_amount.is_fiat()
+        if taker_consideration_fiat == False:
+            percent_amt = trade.taker_amount.percent_amt(TDS_VALUE_PERCENT)
+            tds_details = TDSDetails(percent_amt)
+            maker_tds = UserTDSDetail(trade.maker, tds_details)
+
+        return trade, taker_tds, maker_tds
 
     async def tdsValue(self, trade: UserTradeDetail):
-        tds_details = self.compute_tds(trade)
+        trade, taker_tds, maker_tds = self.compute_tds(trade)
 
-        #Buyer: Resident - Seller: Resident
-        if maker.is_resident('IN') and taker.is_resident('IN'):
-            pass
+        if taker.is_resident('IN') and taker_tds:
+            err = trade.maker_amount.reduce_amt(taker_tds)
+            if err == 0:
+                trade.add_tds(taker_tds)
 
-        #Buyer: Resident - Seller: Non_Resident
-        elif maker.is_resident('IN') and !taker.is_resident('IN'):
-            del tds_details[taker.exchange_user_id]
-
-        #Buyer: Non_resident - Seller: Resident
-        elif !maker.is_resident('IN') and taker.is_resident('IN'):
-            del tds_details[maker.exchange_user_id]
-
-        elif !maker.is_resident('IN') and !taker.is_resident('IN'):
-            del tds_details[maker.exchange_user_id]
-            del tds_details[taker.exchange_user_id]
+        if maker.is_resident('IN') and maker_tds:
+            err = trade.taker_amount.reduce_amt(maker_tds)
+            if err == 0:
+                trade.add_tds(maker_tds)
 
         #TODO: schedule a task to fetch the liquidation status (later)
-        #TODO: @shakun, please save it in the datastore
-        return tds_details
+        #TODO: @shakun, please save the following in the datastore
+            # trade_id, maker_id -> maker_tds
+            # trade_id, taker_id -> taker_tds
+        return trade
 
-    async def getTDSStatus(self, account_flag, page, limit):
+    async def getTDSStatus(self, user, trade_id, page, limit):
         #TODO: @shakun, get the user_tds_details (saved above in tdsValue) and return
         #TODO: schedule a task to fetch the liquidation status
         #TODO: update if there is any change in the state in the DB
