@@ -7,7 +7,7 @@ networks:
         - subnet: 172.100.2.0/24
 services:
   tds-calculator_web:
-    image: tds-calculator_web:latest
+    image: us-west1-docker.pkg.dev/binocs-staging/partner-services-repo/tds-calculator_web:latest
     command: ["uvicorn", "tds.calculator.main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
       - /tmp:/data
