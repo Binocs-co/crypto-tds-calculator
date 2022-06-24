@@ -8,9 +8,9 @@ from tds.calculator.models.user import User
 from tds.calculator.custom_router.ExceptionHandlerLoggingRoute import ExceptionHandlerLoggingRoute
 
 private_key = ''      #TODO: @Shakun, to fetch the key which was downloaded from the partner dashboard
-escrow_account = None #TODO: @Exchange team to define the format of the account. Will be used to
-                      #      deduct the TDS
-data_store = None     #Redis DB Access
+escrow_account = None #TODO: @Shakun, Exchange team to define the User for the Binocs Account. Will
+                      #               be used to deduct the TDS
+data_store = None     #TODO: @Shakun, this is for the Redis DB Access
 tds_service = TDSService('bitbns', private_key, escrow_account, data_store)
 router = APIRouter(prefix="/tds", tags=["tds"], route_class=ExceptionHandlerLoggingRoute)
 

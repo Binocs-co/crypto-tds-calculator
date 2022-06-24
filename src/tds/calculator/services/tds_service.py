@@ -15,7 +15,7 @@ class TDSService:
     #TODO: use exchange_id for interaction with the binocs servers here (if any)
     #TODO: We should use the private key generated from the partner dashboard for secure
     #      communication
-    def __init__(self, exchange_id: str, private_key: str, escrow_account, datastore):
+    def __init__(self, exchange_id: str, private_key: str, escrow_account: User, datastore):
         self.datastore = datastore
         self.escrow_account = escrow_account
         self.private_key = private_key
@@ -31,23 +31,28 @@ class TDSService:
 
     #Returns TDS
     def compute_tds(self, trade):
+        for amt in trade.maker_amount:
+
         return {}
 
     async def tdsValue(self, trade: UserTradeDetail):
         tds_details = self.compute_tds(trade)
 
         #Buyer: Resident - Seller: Resident
-        if buyer.is_resident('IN') and seller.is_resident('IN'):
+        if maker.is_resident('IN') and taker.is_resident('IN'):
             pass
+
         #Buyer: Resident - Seller: Non_Resident
-        if buyer.is_resident('IN') and !seller.is_resident('IN'):
-            del tds_details[seller.exchange_user_id]
+        elif maker.is_resident('IN') and !taker.is_resident('IN'):
+            del tds_details[taker.exchange_user_id]
+
         #Buyer: Non_resident - Seller: Resident
-        if !buyer.is_resident('IN') and seller.is_resident('IN'):
-            del tds_details[buyer.exchange_user_id]
-        if !buyer.is_resident('IN') and !seller.is_resident('IN'):
-            del tds_details[buyer.exchange_user_id]
-            del tds_details[seller.exchange_user_id]
+        elif !maker.is_resident('IN') and taker.is_resident('IN'):
+            del tds_details[maker.exchange_user_id]
+
+        elif !maker.is_resident('IN') and !taker.is_resident('IN'):
+            del tds_details[maker.exchange_user_id]
+            del tds_details[taker.exchange_user_id]
 
         #TODO: schedule a task to fetch the liquidation status (later)
         #TODO: @shakun, please save it in the datastore

@@ -2,7 +2,7 @@ from pydantic import Field, BaseModel
 
 from tds.calculator.models.binocs_model import BinocsModel
 from tds.calculator.models.user import User
-from tds.calculator.models.trade import Amount
+from tds.calculator.models.amount import Amount
 
 class UserTDSDetails(BaseModel):
     '''

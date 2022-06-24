@@ -1,6 +1,8 @@
 from pydantic import Field, BaseModel
 from tds.calculator.models.binocs_model import BinocsModel
 from tds.calculator.models.user import User
+from tds.calculator.models.amount import Amount
+from tds.calculator.models.tds import UserTradeDetails
 
 class UserTradeDetail(BaseModel):
     '''
@@ -19,12 +21,4 @@ class UserTradeDetail(BaseModel):
     maker_amount: list = Field(None)
     taker: User = Field(None)
     taker_amount: list = Field(None)
-
-class Amount(BaseModel):
-    '''
-        amount: [value: int, coin: string, decimal: int]}]
-    '''
-    value: int = Field(None)
-    coin: str = Field(None)
-    decimal: int = Field(None)
-    coin_type: str = Field(None) #Fiat/VDA
+    tds_details: list = Field(None)
