@@ -2,7 +2,10 @@ from pydantic import Field, BaseModel
 
 from tds.calculator.models.binocs_model import BinocsModel
 
-class TDSDetail(BaseModel):
+class TDSDetails(BaseModel):
     '''
-    tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
+    tds | {trade_id: string,
+                                     amount: {value: int, coin: string, decimal: int}
+                                     fiat: float,  currency: string, challan: url,
+                                     status: string}}
     '''

@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from tds.calculator.models.binocs_model import BinocsId
 from tds.calculator.models.user import User
 from tds.calculator.models.trade import UserTradeDetail, TradeDetail, Amount
+from tds.calculator.models.tds import UserTdsDetail, TdsDetail
 
 logger = get_logger(__name__)
 
@@ -28,6 +29,10 @@ class TDSService:
         #TODO: Securely register user on Binocs as well
         return binocs_id
 
+    #Returns TDS
+    def compute_tds(self, trade_details: TradeDetail):
+        pass
+
     '''
     tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
     binocs-account-details | account details in the exchange [TBD]
@@ -37,6 +42,8 @@ class TDSService:
         buyer = get_user(trade.buyer_id) #TODO: @shakun, we will need these functions
         seller = get_user(trade.seller_id) #TODO: @shakun, we will need these functions
         trade_details = trade.details
+
+        tds_details = self.compute_tds(trade.details)
 
         #Buyer: Resident - Seller: Resident
         if buyer.is_resident('IN') and seller.is_resident('IN'):
@@ -51,9 +58,14 @@ class TDSService:
         if !buyer.is_resident('IN') and !seller.is_resident('IN'):
             pass
 
-        return await self.mongo_util.get({"user_id": user_id})
+        #TODO: schedule a task to fetch the liquidation status (later)
+        #TODO: @shakun, please save it in the datastore
+        return user_tds_details
 
     async def getTDSStatus(self, account_flag, page, limit):
+        #TODO: @shakun, get the user_tds_details (saved above in tdsValue) and return
+        #TODO: schedule a task to fetch the liquidation status
+        #TODO: update if there is any change in the state in the DB
         document_filter = {}
         extra_args = {}
         if account_flag:

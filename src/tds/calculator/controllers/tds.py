@@ -14,7 +14,7 @@ data_store = None     #Redis DB Access
 tds_service = TDSService('bitbns', private_key, escrow_account, data_store)
 router = APIRouter(prefix="/tds", tags=["tds"], route_class=ExceptionHandlerLoggingRoute)
 
-    '''
+'''
     NOTE: this API registers on Binocs server as well with exchange_user_id & PAN
     POST /tds-register-user/
     Parameters:
@@ -32,13 +32,13 @@ router = APIRouter(prefix="/tds", tags=["tds"], route_class=ExceptionHandlerLogg
                                             needs to be deducted always.
     Response:
         binocs-id | string
-    '''
+'''
 @router.post(path="/tds-register-user", response_model=BinocsId)
 async def registerUser(user: User):
     registered_id: BinocsId = await tds_service.registerUser(user)
     return registered_id
 
-    '''
+'''
     GET /tds-value/
     Parameters
         taker_id: string | mandatory | exchange_user_id of the taker
@@ -49,13 +49,22 @@ async def registerUser(user: User):
     Return
         tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
         binocs-account-details | account details in the exchange [TBD]
-    '''
-@router.get(path="/tds-value", response_model=TDSDetail)
+'''
+@router.get(path="/tds-value", response_model=List[TDSDetail])
 async def tradeTDS(userTradeDetail: UserTradeDetail):
     tdsDetail: TDSDetail = await tds_service.tdsValue(userTradeDetail)
     return tdsDetail
 
-@router.get(path="/status", response_model=List[User], response_model_exclude_unset=True)
-async def status(account_flag: bool = False, page: int = 1, limit: int = 10):
-    user = await tds_service.getTDSList(account_flag, page, limit)
-    return user
+'''
+    Get /tds-status/
+    Parameters:
+        user_id | string | exchange_user_id of the user
+        trade_id | string | optional
+    Return:
+        [trade_id: string, fiat_value: float, challan: url, status: string | (Paid/Liquidated/Pending/..)]
+
+'''
+@router.get(path="/tds-status", response_model=List[TDSDetail], response_model_exclude_unset=True)
+async def status(user: User, trade_id: str = None, page: int = 1, limit: int = 10):
+    tdsDetail = await tds_service.getTDSStatus(user, trade_id, page, limit)
+    return tdsDetail

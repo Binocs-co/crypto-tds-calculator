@@ -12,9 +12,10 @@ class User(BinocsModel):
         arbitrary_types_allowed = True
         schema_extra = {
             "example": {
-                "email": "test_email",
+                "exchange_user_id": "user_id",
                 "pan": "test_phone",
-                "itr_ack": True
+                "itr_ack": True,
+                "exempt": False
             }
         }
 
