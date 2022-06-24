@@ -1,25 +1,23 @@
 from pydantic import Field, BaseModel
 from tds.calculator.models.binocs_model import BinocsModel
+from tds.calculator.models.user import User
 
 class UserTradeDetail(BaseModel):
-   ''' buyer_id: string | mandatory | exchange-id of the user
-       seller_id: string | mandatory | exchange-id of the user
-       details: json | mandatory | [{trade_id: string, type: string, timestamp: int,
-                                     amount: [value: int, coin: string, decimal: int]}]
-   '''
-   buyer_id: str = Field(None)
-   seller_id: str = Field(None)
-   details: list = Field(None)
-
-class TradeDetail(BaseModel):
+    ''' maker: User | mandatory | exchange-id of the maker
+        taker: User | mandatory | exchange-id of the taker
+        trade_id: string | mandatory
+        trade_type: string | mandatory | buy OR sell
+        timestamp: int | mandatory
+        maker_amount: list | mandatory | [Amount]
+        taker_amount: list | mandatory | [Amount]
     '''
-       details: json | mandatory | [{trade_id: string, type: string, timestamp: int,
-                                     amount: [value: int, coin: string, decimal: int]}]
-    '''
+    maker: User = Field(None)
+    taker: User = Field(None)
     trade_id: str = Field(None)
     trade_type: str = Field(None)
     timestamp: int = Field(None)
-    amount: list = Field(None)
+    maker_amount: list = Field(None)
+    taker_amount: list = Field(None)
 
 class Amount(BaseModel):
     '''

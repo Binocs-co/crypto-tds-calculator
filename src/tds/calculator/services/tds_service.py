@@ -30,21 +30,23 @@ class TDSService:
         return binocs_id
 
     #Returns TDS
-    def compute_tds(self, trade_details: TradeDetail):
-        #Check if trade is swap or fiat trade
-        pass
+    def compute_tds(self, buyer, buyer_amount, seller, seller_amount):
+        return {}
 
-    '''
-    tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
-    binocs-account-details | account details in the exchange [TBD]
-
-    '''
     async def tdsValue(self, trade: UserTradeDetail):
-        buyer = get_user(trade.buyer_id) #TODO: @shakun, we will need these functions
-        seller = get_user(trade.seller_id) #TODO: @shakun, we will need these functions
-        trade_details = trade.details
+        if trade.trade_type == 'BUY': #TODO: @shakun, please see if we need to hard code this or if
+                                      #      we can enforce this in the model itself.
+            buyer = trade.taker
+            buyer_amount = trade.taker_amount
+            seller = trade.maker
+            seller_amount = trade.maker_amount
+        elif trade.trade_type == 'SELL':
+            buyer = trade.maker
+            buyer_amount = trade.maker_amount
+            seller = trade.taker
+            seller_amount = trade.taker_amount
 
-        tds_details = self.compute_tds(trade.details)
+        tds_details = self.compute_tds(buyer, buyer_amount, seller, seller_amount)
 
         #Buyer: Resident - Seller: Resident
         if buyer.is_resident('IN') and seller.is_resident('IN'):
