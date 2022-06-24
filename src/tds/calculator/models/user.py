@@ -7,7 +7,6 @@ class User(BinocsModel):
     email: str = Field(None)
     pan: str = Field(None)
     itr_ack: bool = Field(True)
-    trade_amount: Optional[float] = Field(0)
 
     class Config:
         arbitrary_types_allowed = True
@@ -15,7 +14,12 @@ class User(BinocsModel):
             "example": {
                 "email": "test_email",
                 "pan": "test_phone",
-                "itr_ack": True,
-                "trade_amount": 5000
+                "itr_ack": True
             }
         }
+
+    def is_resident(self, country_code: str):
+        if country_code == 'IN':
+            if self.pan and self.pan != 'NA':
+                return True
+        return False
