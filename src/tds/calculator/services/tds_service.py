@@ -31,6 +31,7 @@ class TDSService:
 
     #Returns TDS
     def compute_tds(self, trade_details: TradeDetail):
+        #Check if trade is swap or fiat trade
         pass
 
     '''
@@ -47,20 +48,20 @@ class TDSService:
 
         #Buyer: Resident - Seller: Resident
         if buyer.is_resident('IN') and seller.is_resident('IN'):
-            #Check if trade is swap or fiat trade
             pass
         #Buyer: Resident - Seller: Non_Resident
         if buyer.is_resident('IN') and !seller.is_resident('IN'):
-            pass
+            del tds_details[seller.exchange_user_id]
         #Buyer: Non_resident - Seller: Resident
         if !buyer.is_resident('IN') and seller.is_resident('IN'):
-            pass
+            del tds_details[buyer.exchange_user_id]
         if !buyer.is_resident('IN') and !seller.is_resident('IN'):
-            pass
+            del tds_details[buyer.exchange_user_id]
+            del tds_details[seller.exchange_user_id]
 
         #TODO: schedule a task to fetch the liquidation status (later)
         #TODO: @shakun, please save it in the datastore
-        return user_tds_details
+        return tds_details
 
     async def getTDSStatus(self, account_flag, page, limit):
         #TODO: @shakun, get the user_tds_details (saved above in tdsValue) and return

@@ -4,7 +4,7 @@ from pydantic import Field
 from tds.calculator.models.binocs_model import BinocsModel
 
 class User(BinocsModel):
-    email: str = Field(None)
+    exchange_user_id: str = Field(None)
     pan: str = Field(None)
     itr_ack: bool = Field(True)
 

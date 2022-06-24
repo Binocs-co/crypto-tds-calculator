@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from typing import List
 from tds.calculator.services.tds_service import TDSService
 from tds.calculator.models.binocs_model import BinocsId
-from tds.calculator.models.tds import TDSDetail
+from tds.calculator.models.tds import UserTDSDetail, TDSDetail
 from tds.calculator.models.trade import UserTradeDetail
 from tds.calculator.models.user import User
 from tds.calculator.custom_router.ExceptionHandlerLoggingRoute import ExceptionHandlerLoggingRoute
@@ -50,10 +50,10 @@ async def registerUser(user: User):
         tds | [{exchange_user_id: amount: [value: int, coin: string, decimal: int]}]
         binocs-account-details | account details in the exchange [TBD]
 '''
-@router.get(path="/tds-value", response_model=List[TDSDetail])
+@router.get(path="/tds-value", response_model=List[UserTDSDetail])
 async def tradeTDS(userTradeDetail: UserTradeDetail):
-    tdsDetail: TDSDetail = await tds_service.tdsValue(userTradeDetail)
-    return tdsDetail
+    userTDSDetail: UserTDSDetail = await tds_service.tdsValue(userTradeDetail)
+    return userTDSDetail
 
 '''
     Get /tds-status/
@@ -64,7 +64,7 @@ async def tradeTDS(userTradeDetail: UserTradeDetail):
         [trade_id: string, fiat_value: float, challan: url, status: string | (Paid/Liquidated/Pending/..)]
 
 '''
-@router.get(path="/tds-status", response_model=List[TDSDetail], response_model_exclude_unset=True)
+@router.get(path="/tds-status", response_model=List[UserTDSDetail], response_model_exclude_unset=True)
 async def status(user: User, trade_id: str = None, page: int = 1, limit: int = 10):
-    tdsDetail = await tds_service.getTDSStatus(user, trade_id, page, limit)
-    return tdsDetail
+    userTDSDetail: UserTDSDetail = await tds_service.getTDSStatus(user, trade_id, page, limit)
+    return userTDSDetail

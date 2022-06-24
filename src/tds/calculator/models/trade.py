@@ -28,3 +28,4 @@ class Amount(BaseModel):
     value: int = Field(None)
     coin: str = Field(None)
     decimal: int = Field(None)
+    coin_type: str = Field(None) #Fiat/VDA
