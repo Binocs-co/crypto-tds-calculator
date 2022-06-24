@@ -30,23 +30,11 @@ class TDSService:
         return binocs_id
 
     #Returns TDS
-    def compute_tds(self, buyer, buyer_amount, seller, seller_amount):
+    def compute_tds(self, trade):
         return {}
 
     async def tdsValue(self, trade: UserTradeDetail):
-        if trade.trade_type == 'BUY': #TODO: @shakun, please see if we need to hard code this or if
-                                      #      we can enforce this in the model itself.
-            buyer = trade.taker
-            buyer_amount = trade.taker_amount
-            seller = trade.maker
-            seller_amount = trade.maker_amount
-        elif trade.trade_type == 'SELL':
-            buyer = trade.maker
-            buyer_amount = trade.maker_amount
-            seller = trade.taker
-            seller_amount = trade.taker_amount
-
-        tds_details = self.compute_tds(buyer, buyer_amount, seller, seller_amount)
+        tds_details = self.compute_tds(trade)
 
         #Buyer: Resident - Seller: Resident
         if buyer.is_resident('IN') and seller.is_resident('IN'):
