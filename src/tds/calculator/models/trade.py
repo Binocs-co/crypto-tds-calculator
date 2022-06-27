@@ -1,30 +1,29 @@
-from pydantic import Field, BaseModel
+from pydantic import Field
 
 from tds.calculator.models.binocs_model import BinocsModel
+from tds.calculator.models.user import User
+from tds.calculator.models.amount import Amount
+from tds.calculator.models.tds import UserTDSDetails
 
-class TradeAcknowledgement(BaseModel):
-    acknowledgement: bool = Field(True)
-
-    class Config:
-        arbitrary_types_allowed = True
-        schema_extra = {
-            "example": {
-                "acknowledgement": True
-            }
-        }
-
-class UserTradeDetail(BaseModel):
-   ''' from: string | mandatory | email of the user
-to: string | mandatory | email of the user
-tx-detail | json | mandatory | [{type: string, timestamp: int, value: int, value_coin: string, value_decimal: int, fee: int, fee_coin: string, fee_decimal: int}]
-tx_type: trade | lending | fixed-income | coupon'''
-
-
-class TradeDetail(BaseModel):
-    '''email | string | mandatory | email of the user
-    tx-detail | json | mandatory | [{type: string, timestamp: int, value: int, value_coin: string, value_decimal: int, fee: int, fee_coin: string, fee_decimal: int}]
-    type: trade | lending | fixed-income | coupon'''
-
-class TradeLineItem(BaseModel) :
-    '''tx-detail | json | mandatory | [{type: string, timestamp: int, value: int, value_coin: string, value_decimal: int, fee: int, fee_coin: string, fee_decimal: int}]
+class UserTradeDetail(BinocsModel):
     '''
+        trade_id: string | mandatory
+        timestamp: int | mandatory
+        trade_type: string | mandatory | 'TRADE' for now
+        maker: User | mandatory | exchange-id of the maker
+        maker_amount: list | mandatory | [Amount]
+        taker: User | mandatory | exchange-id of the taker
+        taker_amount: list | mandatory | [Amount]
+    '''
+    exchange_id: str = Field(None)
+    trade_id: str = Field(None)
+    timestamp: int = Field(None)
+    trade_type: str = Field(None)
+    maker: User = Field(None)
+    maker_amount: Amount = Field(None)
+    taker: User = Field(None)
+    taker_amount: Amount = Field(None)
+    txfee_amount: Amount = Field(None)
+    gst_amount: Amount = Field(None)
+    maker_tds_details: UserTDSDetails = Field(None)
+    taker_tds_details: UserTDSDetails = Field(None)
