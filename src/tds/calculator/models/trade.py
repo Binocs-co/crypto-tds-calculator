@@ -1,10 +1,11 @@
-from pydantic import Field, BaseModel
+from pydantic import Field
+
 from tds.calculator.models.binocs_model import BinocsModel
 from tds.calculator.models.user import User
 from tds.calculator.models.amount import Amount
-from tds.calculator.models.tds import UserTradeDetails
+from tds.calculator.models.tds import UserTDSDetails
 
-class UserTradeDetail(BaseModel):
+class UserTradeDetail(BinocsModel):
     '''
         trade_id: string | mandatory
         timestamp: int | mandatory
@@ -14,6 +15,7 @@ class UserTradeDetail(BaseModel):
         taker: User | mandatory | exchange-id of the taker
         taker_amount: list | mandatory | [Amount]
     '''
+    exchange_id: str = Field(None)
     trade_id: str = Field(None)
     timestamp: int = Field(None)
     trade_type: str = Field(None)
@@ -21,8 +23,7 @@ class UserTradeDetail(BaseModel):
     maker_amount: Amount = Field(None)
     taker: User = Field(None)
     taker_amount: Amount = Field(None)
-    tds_details: List[UserTDSDetails] = Field(None)
-
-    def add_tds(self, user_tds_details):
-        self.tds_details.append(user_tds_details)
-        return
+    txfee_amount: Amount = Field(None)
+    gst_amount: Amount = Field(None)
+    maker_tds_details: UserTDSDetails = Field(None)
+    taker_tds_details: UserTDSDetails = Field(None)
