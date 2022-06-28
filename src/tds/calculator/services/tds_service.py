@@ -12,7 +12,7 @@ from tds.calculator.common.datastore.datastore import Datastore
 
 from datetime import datetime
 
-TDS_VALUE_PERCENT = 1
+TDS_VALUE_PERCENT = 100
 logger = get_logger(__name__)
 datastore = Datastore()
 
